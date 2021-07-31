@@ -1,0 +1,36 @@
+{
+    "name": "lee/model-cache",
+    "description": "A model cache component",
+    "license": "MIT",
+    "keywords": [
+        "php",
+        "cike",
+        "model-cache"
+    ],
+    "authors": [
+        {
+            "name": "liguoxin",
+            "email": "guoxinlee129@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Lee\\ModelCache\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lee\\ModelCache\\": "tests"
+        }
+    },
+    "scripts": {
+        "cs-fix": "php-cs-fixer fix $1",
+        "test": "phpunit --colors=always"
+    }
+}
