@@ -1,5 +1,5 @@
 {
-    "name": "liguoxin/model-cache",
+    "name": "liguoxin129/model-cache",
     "description": "A model cache component",
     "license": "MIT",
     "keywords": [
@@ -9,7 +9,7 @@
     ],
     "authors": [
         {
-            "name": "liguoxin",
+            "name": "liguoxin129",
             "email": "guoxinlee129@gmail.com"
         }
     ],
