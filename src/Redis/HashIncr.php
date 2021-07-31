@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache\Redis;
+namespace LiGuoXin129\ModelCache\Redis;
 
 class HashIncr implements OperatorInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache\Handler;
+namespace LiGuoXin129\ModelCache\Handler;
 
 use Hyperf\ModelCache\Config;
 use Psr\SimpleCache\CacheInterface;

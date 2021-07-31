@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache\Listener;
+namespace LiGuoXin129\ModelCache\Listener;
 
 use Hyperf\Database\Model\Collection;
 use Hyperf\Event\Contract\ListenerInterface;

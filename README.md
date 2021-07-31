@@ -6,7 +6,7 @@
 ## Installing
 
 ```shell
-$ composer require lee/model-cache -vvv
+$ composer require liguoxin129/model-cache -vvv
 ```
 
 ## Usage

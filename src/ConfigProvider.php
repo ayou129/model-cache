@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache;
+namespace LiGuoXin129\ModelCache;
 
 use Hyperf\ModelCache\Listener\DeleteCacheInTransactionListener;
 use Hyperf\ModelCache\Listener\DeleteCacheListener;

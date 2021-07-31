@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache\Exception;
+namespace LiGuoXin129\ModelCache\Exception;
 
 class OperatorNotFoundException extends \RuntimeException
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache;
+namespace LiGuoXin129\ModelCache;
 
 use Hyperf\Database\Model\Builder as ModelBuilder;
 use Hyperf\Utils\ApplicationContext;

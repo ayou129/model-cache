@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lee\ModelCache\EagerLoad;
+namespace LiGuoXin129\ModelCache\EagerLoad;
 
 use Hyperf\Database\Connection;
 use Hyperf\Database\Model\Builder;
