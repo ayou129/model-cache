@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache;
+namespace Liguoxin129\ModelCache;
 
 use Hyperf\Contract\ConfigInterface;
 use Hyperf\Contract\StdoutLoggerInterface;
-use Hyperf\Database\Model\Collection;
-use Hyperf\Database\Model\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Hyperf\DbConnection\Collector\TableCollector;
 use Hyperf\ModelCache\Handler\HandlerInterface;
 use Hyperf\ModelCache\Handler\RedisHandler;

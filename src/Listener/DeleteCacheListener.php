@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache\Listener;
+namespace Liguoxin129\ModelCache\Listener;
 
 use Hyperf\Database\Model\Events\Deleted;
 use Hyperf\Database\Model\Events\Event;

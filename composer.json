@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "LiGuoXin129\\ModelCache\\": "src"
+            "Liguoxin129\\ModelCache\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "LiGuoXin129\\ModelCache\\": "tests"
+            "Liguoxin129\\ModelCache\\": "tests"
         }
     },
     "scripts": {

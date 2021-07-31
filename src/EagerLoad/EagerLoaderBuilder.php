@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache\EagerLoad;
+namespace Liguoxin129\ModelCache\EagerLoad;
 
 use Closure;
-use Hyperf\Database\Model\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Hyperf\Database\Model\Relations\Relation;
 use Hyperf\ModelCache\CacheableInterface;
 use Hyperf\Utils\Arr;

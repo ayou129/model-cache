@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache;
+namespace Liguoxin129\ModelCache;
 
-use Hyperf\Database\Model\Builder as ModelBuilder;
-use Hyperf\Utils\ApplicationContext;
+use Illuminate\Database\Eloquent\Builder as ModelBuilder;
 
 class Builder extends ModelBuilder
 {

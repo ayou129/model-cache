@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache;
+namespace Liguoxin129\ModelCache;
 
-use Hyperf\Database\Model\Collection;
-use Hyperf\Database\Model\Model;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 interface CacheableInterface
 {

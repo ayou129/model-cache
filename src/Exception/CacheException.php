@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache\Exception;
+namespace Liguoxin129\ModelCache\Exception;
 
 class CacheException extends \RuntimeException
 {

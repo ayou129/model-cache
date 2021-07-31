@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace LiGuoXin129\ModelCache\Redis;
+namespace Liguoxin129\ModelCache\Redis;
 
 interface OperatorInterface
 {
