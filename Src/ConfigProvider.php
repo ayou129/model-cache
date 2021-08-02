@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache;
 
-// use Hyperf\ModelCache\Listener\DeleteCacheInTransactionListener;
-// use Hyperf\ModelCache\Listener\DeleteCacheListener;
+use Liguoxin129\ModelCache\Listener\DeleteCacheInTransactionListener;
+use Liguoxin129\ModelCache\Listener\DeleteCacheListener;
 
 class ConfigProvider
 {

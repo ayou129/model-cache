@@ -41,12 +41,12 @@ class Config
      * Whether to use default value when resolved from cache.
      * @var bool
      */
-    protected $useDefaultValue = false;
+    protected bool $useDefaultValue = false;
 
     /**
      * @var bool
      */
-    protected $loadScript = true;
+    protected bool $loadScript = true;
 
     public function __construct(array $values, string $name)
     {

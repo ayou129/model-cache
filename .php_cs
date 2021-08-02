@@ -1,6 +1,6 @@
 <?php
 $header = <<<EOF
-This file is part of the lee/model-cache.
+This file is part of the liguoxin129/model-cache.
 
 (c) liguoxin <guoxinlee129@gmail.com>
 
@@ -10,7 +10,7 @@ EOF;
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
     ->setRules(array(
-        '@Y' => true,
+        '@Symfony' => true,
         'header_comment' => array('header' => $header),
         'array_syntax' => array('syntax' => 'short'),
         'ordered_imports' => true,

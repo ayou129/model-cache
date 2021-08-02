@@ -4,49 +4,31 @@ declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache\Handler;
 
-use Hyperf\Contract\PackerInterface;
-use Hyperf\ModelCache\Config;
-use Hyperf\ModelCache\Exception\CacheException;
-use Hyperf\Redis\RedisProxy;
-use Hyperf\Utils\Contracts\Arrayable;
-use Hyperf\Utils\InteractsWithTime;
-use Hyperf\Utils\Packer\PhpSerializerPacker;
-use Psr\Container\ContainerInterface;
+use Liguoxin129\ModelCache\Packer\PackerInterface;
+use Liguoxin129\ModelCache\Packer\PhpSerializerPacker;
+use Liguoxin129\ModelCache\Config;
+use Liguoxin129\ModelCache\Exception\CacheException;
+use Liguoxin129\ModelCache\Redis\HashGetMultiple;
+use Liguoxin129\ModelCache\Redis\HashIncr;
+use Liguoxin129\ModelCache\Redis\LuaManager;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\InteractsWithTime;
 
 class RedisStringHandler implements HandlerInterface
 {
     use InteractsWithTime;
 
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * @var RedisProxy
-     */
     protected $redis;
-
-    /**
-     * @var Config
-     */
-    protected $config;
 
     /**
      * @var PackerInterface
      */
     protected $packer;
 
-    public function __construct(ContainerInterface $container, Config $config)
+    public function __construct()
     {
-        $this->container = $container;
-        if (! $container->has(RedisProxy::class)) {
-            throw new CacheException(sprintf('Entry[%s] of the container is not exist.', RedisProxy::class));
-        }
-
-        $this->redis = make(RedisProxy::class, ['pool' => $config->getPool()]);
-        $this->config = $config;
-        $this->packer = $container->get(PhpSerializerPacker::class);
+        $this->redis = app('redis');
+        $this->packer = new PhpSerializerPacker();
     }
 
     public function get($key, $default = null)

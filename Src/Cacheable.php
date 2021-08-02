@@ -3,30 +3,26 @@
 declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache;
-//
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-// use Hyperf\ModelCache\Builder as ModelCacheBuilder;
-// use Hyperf\Utils\ApplicationContext;
+use Liguoxin129\ModelCache\Builder as ModelCacheBuilder;
 
 trait Cacheable
 {
     /**
      * @var bool
      */
-    protected $useCacheBuilder = false;
+    protected bool $useCacheBuilder = false;
 
     /**
      * Fetch a model from cache.
      * @param mixed $id
-     * @return null|self
      */
-    public static function findFromCache($id): ?Model
+    public static function findFromCache($id)
     {
-        $container = ApplicationContext::getContainer();
-        $manager = $container->get(Manager::class);
+        $manager = new Manager();
 
         return $manager->findFromCache($id, static::class);
     }
@@ -36,19 +32,18 @@ trait Cacheable
      */
     public static function findManyFromCache(array $ids): Collection
     {
-        $container = ApplicationContext::getContainer();
-        $manager = $container->get(Manager::class);
+        $manager = new Manager();
 
         $ids = array_unique($ids);
         return $manager->findManyFromCache($ids, static::class);
     }
 
     /**
-     * Delete model from cache.
+     * 先有数据才能进行删除，所以非静态方法，目前只能一次删一个
      */
     public function deleteCache(): bool
     {
-        $manager = $this->getContainer()->get(Manager::class);
+        $manager = new Manager();
 
         return $manager->destroy([$this->getKey()], get_called_class());
     }
@@ -62,22 +57,23 @@ trait Cacheable
     }
 
     /**
-     * Increment a column's value by a given amount.
+     * 按照指定列递增给定值
      * @param string $column
      * @param float|int $amount
      * @return int
      */
     public function increment($column, $amount = 1, array $extra = [])
     {
+        # FIXME 这里和Mysql事务会有不一致的情况
         $res = parent::increment($column, $amount, $extra);
         if ($res > 0) {
             if (empty($extra)) {
-                // Only increment a column's value.
+                // 只增加值
                 /** @var Manager $manager */
-                $manager = $this->getContainer()->get(Manager::class);
+                $manager = new Manager();
                 $manager->increment($this->getKey(), $column, $amount, get_called_class());
             } else {
-                // Update other columns, when increment a column's value.
+                // 当增加值时，更新其他列
                 $this->deleteCache();
             }
         }
@@ -85,22 +81,22 @@ trait Cacheable
     }
 
     /**
-     * Decrement a column's value by a given amount.
+     * 按照指定列递减给定值
      * @param string $column
      * @param float|int $amount
      * @return int
      */
     public function decrement($column, $amount = 1, array $extra = [])
     {
+        # FIXME 这里和Mysql事务会有不一致的情况
         $res = parent::decrement($column, $amount, $extra);
         if ($res > 0) {
             if (empty($extra)) {
-                // Only decrement a column's value.
-                /** @var Manager $manager */
-                $manager = $this->getContainer()->get(Manager::class);
+                // 只减少值
+                $manager = new Manager();
                 $manager->increment($this->getKey(), $column, -$amount, get_called_class());
             } else {
-                // Update other columns, when decrement a column's value.
+                // 当减少值时，更新其他列
                 $this->deleteCache();
             }
         }
@@ -108,7 +104,7 @@ trait Cacheable
     }
 
     /**
-     * Create a new Model query builder for the model.
+     * 为模型创建新的模型查询生成器
      * @param QueryBuilder $query
      */
     public function newModelBuilder($query): Builder
@@ -127,7 +123,7 @@ trait Cacheable
     }
 
     /**
-     * @param bool $cache Whether to delete the model cache when batch update
+     * @param bool $cache 批量更新时是否删除模型缓存
      */
     public static function query(bool $cache = false): Builder
     {

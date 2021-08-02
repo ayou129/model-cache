@@ -4,54 +4,39 @@ declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache\Handler;
 
-use Hyperf\ModelCache\Config;
-use Hyperf\ModelCache\Exception\CacheException;
-use Hyperf\ModelCache\Redis\HashGetMultiple;
-use Hyperf\ModelCache\Redis\HashIncr;
-use Hyperf\ModelCache\Redis\LuaManager;
-use Hyperf\Redis\RedisProxy;
-use Hyperf\Utils\Contracts\Arrayable;
-use Hyperf\Utils\InteractsWithTime;
-use Psr\Container\ContainerInterface;
+use Liguoxin129\ModelCache\Config;
+use Liguoxin129\ModelCache\Exception\CacheException;
+use Liguoxin129\ModelCache\Redis\HashGetMultiple;
+use Liguoxin129\ModelCache\Redis\HashIncr;
+use Liguoxin129\ModelCache\Redis\LuaManager;
+use App\Services\Reuse;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\InteractsWithTime;
 
 class RedisHandler implements HandlerInterface
 {
     use InteractsWithTime;
-
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * @var RedisProxy
-     */
     protected $redis;
-
-    /**
-     * @var Config
-     */
-    protected $config;
 
     /**
      * @var LuaManager
      */
-    protected $manager;
+    protected LuaManager $manager;
 
-    protected $defaultKey = 'HF-DATA';
+    /**
+     * @var Config
+     */
+    protected Config $config;
 
-    protected $defaultValue = 'DEFAULT';
+    protected string $defaultKey = 'HF-DATA';
 
-    public function __construct(ContainerInterface $container, Config $config)
+    protected string $defaultValue = 'DEFAULT';
+
+    public function __construct(Config $config)
     {
-        $this->container = $container;
-        if (! $container->has(RedisProxy::class)) {
-            throw new CacheException(sprintf('Entry[%s] of the container is not exist.', RedisProxy::class));
-        }
-
-        $this->redis = make(RedisProxy::class, ['pool' => $config->getPool()]);
+        $this->redis = Reuse::getRedis();
         $this->config = $config;
-        $this->manager = make(LuaManager::class, [$config]);
+        $this->manager = new LuaManager($config);
     }
 
     public function get($key, $default = null)

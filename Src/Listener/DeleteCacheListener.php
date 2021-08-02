@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Liguoxin129\ModelCache\Listener;
 
 use Hyperf\Database\Model\Events\Deleted;
-use Hyperf\Database\Model\Events\Event;
+// use Hyperf\Database\Model\Events\Event;
 use Hyperf\Database\Model\Events\Saved;
-use Hyperf\Event\Contract\ListenerInterface;
-use Hyperf\ModelCache\CacheableInterface;
-use Hyperf\ModelCache\InvalidCacheManager;
+use Liguoxin129\ModelCache\CacheableInterface;
+use Liguoxin129\ModelCache\InvalidCacheManager;
 
 class DeleteCacheListener implements ListenerInterface
 {

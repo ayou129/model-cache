@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache\Listener;
 
-use Hyperf\Database\Events\TransactionCommitted;
-use Hyperf\Event\Contract\ListenerInterface;
-use Hyperf\ModelCache\InvalidCacheManager;
+use Illuminate\Database\Events\TransactionCommitted;
+use Liguoxin129\ModelCache\InvalidCacheManager;
 
 class DeleteCacheInTransactionListener implements ListenerInterface
 {

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache\Redis;
 
-use Hyperf\ModelCache\Config;
-use Hyperf\ModelCache\Exception\OperatorNotFoundException;
-use Hyperf\Redis\RedisProxy;
+use Liguoxin129\ModelCache\Config;
+use Liguoxin129\ModelCache\Exception\OperatorNotFoundException;
+use App\Services\Reuse;
+use Illuminate\Redis\RedisManager;
 
 class LuaManager
 {
@@ -23,17 +24,18 @@ class LuaManager
     /**
      * @var Config
      */
-    protected $config;
+    protected Config $config;
 
     /**
-     * @var \Redis|RedisProxy
+     * @var RedisManager
      */
     protected $redis;
 
     public function __construct(Config $config)
     {
+        $this->redis = Reuse::getRedis();
+        // dd($this->redis);
         $this->config = $config;
-        $this->redis = make(RedisProxy::class, ['pool' => $config->getPool()]);
         $this->operators[HashGetMultiple::class] = new HashGetMultiple();
         $this->operators[HashIncr::class] = new HashIncr();
     }
@@ -51,10 +53,10 @@ class LuaManager
         }
 
         if (! empty($sha)) {
-            $luaData = $this->redis->evalSha($sha, $keys, $num);
+            $luaData = $this->redis->evalSha($sha, $num, ...$keys);
         } else {
             $script = $operator->getScript();
-            $luaData = $this->redis->eval($script, $keys, $num);
+            $luaData = $this->redis->eval($script, $num, ...$keys);
         }
 
         return $operator->parseResponse($luaData);

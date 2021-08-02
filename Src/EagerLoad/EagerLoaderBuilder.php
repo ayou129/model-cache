@@ -6,9 +6,9 @@ namespace Liguoxin129\ModelCache\EagerLoad;
 
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
-use Hyperf\Database\Model\Relations\Relation;
-use Hyperf\ModelCache\CacheableInterface;
-use Hyperf\Utils\Arr;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Liguoxin129\ModelCache\CacheableInterface;
+use Illuminate\Support\Arr;
 
 class EagerLoaderBuilder extends Builder
 {
@@ -35,7 +35,8 @@ class EagerLoaderBuilder extends Builder
 
     protected function getEagerModels(Relation $relation)
     {
-        $wheres = $relation->getQuery()->getQuery()->wheres;
+        $wheres = $relation->getQuery()
+            ->getQuery()->wheres;
         $model = $relation->getModel();
         $column = sprintf('%s.%s', $model->getTable(), $model->getKeyName());
 
@@ -49,7 +50,10 @@ class EagerLoaderBuilder extends Builder
     protected function couldUseEagerLoad(array $wheres, string $column): bool
     {
         return count($wheres) === 1
-            && in_array(Arr::get($wheres[0], 'type'), ['In', 'InRaw'], true)
+            && in_array(Arr::get($wheres[0], 'type'), [
+                'In',
+                'InRaw',
+            ], true)
             && Arr::get($wheres[0], 'column') === $column
             && $this->isValidValues($wheres[0]['values'] ?? []);
     }

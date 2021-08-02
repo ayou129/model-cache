@@ -4,99 +4,75 @@ declare(strict_types=1);
 
 namespace Liguoxin129\ModelCache;
 
-use Hyperf\Contract\ConfigInterface;
-use Hyperf\Contract\StdoutLoggerInterface;
+use Liguoxin129\ModelCache\Handler\HandlerInterface;
+use Liguoxin129\ModelCache\Handler\RedisHandler;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Hyperf\DbConnection\Collector\TableCollector;
-use Hyperf\ModelCache\Handler\HandlerInterface;
-use Hyperf\ModelCache\Handler\RedisHandler;
 use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
+// use Hyperf\DbConnection\Collector\TableCollector;
 
 class Manager
 {
     /**
-     * @var ContainerInterface
+     * @var HandlerInterface
      */
-    protected $container;
+    protected $handler;
 
-    /**
-     * @var HandlerInterface[]
-     */
-    protected $handlers = [];
-
-    /**
-     * @var StdoutLoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var TableCollector
-     */
     protected $collector;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct()
     {
-        $this->container = $container;
-        $this->logger = $container->get(StdoutLoggerInterface::class);
-        $this->collector = $container->get(TableCollector::class);
-
-        $config = $container->get(ConfigInterface::class);
-        if (! $config->has('databases')) {
-            throw new InvalidArgumentException('config databases is not exist!');
+        $config = config('database.connections.mysql');
+        if (! $config) {
+            throw new InvalidArgumentException('模型缓存配置不存在!');
         }
-
-        foreach ($config->get('databases') as $key => $item) {
-            $handlerClass = $item['cache']['handler'] ?? RedisHandler::class;
-            $config = new Config($item['cache'] ?? [], $key);
-
-            /** @var HandlerInterface $handler */
-            $handler = make($handlerClass, ['config' => $config]);
-
-            $this->handlers[$key] = $handler;
-        }
+        $handleClass = $config['cache']['handler'] ?? RedisHandler::class;
+        $config = new Config($config['cache'] ?? [], 'mysql');
+        # FIXME 这里需要改成单例
+        $this->handler = new $handleClass($config);
     }
 
     /**
-     * Fetch a model from cache.
-     * @param mixed $id
+     * @param $id
+     * @param string $class
+     * @return Model|null
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function findFromCache($id, string $class): ?Model
     {
         /** @var Model $instance */
         $instance = new $class();
 
-        $name = $instance->getConnectionName();
+        // $name = $instance->getConnectionName();
         $primaryKey = $instance->getKeyName();
 
-        if ($handler = $this->handlers[$name] ?? null) {
-            $key = $this->getCacheKey($id, $instance, $handler->getConfig());
-            $data = $handler->get($key);
+        if ($this->handler) {
+            $key = $this->getCacheKey($id, $instance, $this->handler->getConfig());
+            $data = $this->handler->get($key);
             if ($data) {
                 return $instance->newFromBuilder(
-                    $this->getAttributes($handler->getConfig(), $instance, $data)
+                    $this->getAttributes($this->handler->getConfig(), $instance, $data)
                 );
             }
 
-            // Fetch it from database, because it not exist in cache handler.
+            // 从数据库中获取它，因为它不存在于缓存处理程序中。
             if (is_null($data)) {
                 $model = $instance->newQuery()->where($primaryKey, '=', $id)->first();
                 if ($model) {
-                    $ttl = $this->getCacheTTL($instance, $handler);
-                    $handler->set($key, $this->formatModel($model), $ttl);
+                    $ttl = $this->getCacheTTL($instance, $this->handler);
+                    $this->handler->set($key, $this->formatModel($model), $ttl);
                 } else {
-                    $ttl = $handler->getConfig()->getEmptyModelTtl();
-                    $handler->set($key, [], $ttl);
+                    $ttl = $this->handler->getConfig()->getEmptyModelTtl();
+                    $this->handler->set($key, [], $ttl);
                 }
                 return $model;
             }
 
-            // It not exist in cache handler and database.
+            // 它不存在于缓存处理程序和数据库中。
             return null;
         }
 
-        $this->logger->alert('Cache handler not exist, fetch data from database.');
+        # 缓存处理程序不存在，请从数据库中提取数据。
         return $instance->newQuery()->where($primaryKey, '=', $id)->first();
     }
 
@@ -112,15 +88,15 @@ class Manager
         /** @var Model $instance */
         $instance = new $class();
 
-        $name = $instance->getConnectionName();
+        // $name = $instance->getConnectionName();
         $primaryKey = $instance->getKeyName();
 
-        if ($handler = $this->handlers[$name] ?? null) {
+        if ($this->handler) {
             $keys = [];
             foreach ($ids as $id) {
-                $keys[] = $this->getCacheKey($id, $instance, $handler->getConfig());
+                $keys[] = $this->getCacheKey($id, $instance, $this->handler->getConfig());
             }
-            $data = $handler->getMultiple($keys);
+            $data = $this->handler->getMultiple($keys);
             $items = [];
             $fetchIds = [];
             foreach ($data ?? [] as $item) {
@@ -134,19 +110,19 @@ class Manager
             $targetIds = array_diff($ids, $fetchIds);
             if ($targetIds) {
                 $models = $instance->newQuery()->whereIn($primaryKey, $targetIds)->get();
-                $ttl = $this->getCacheTTL($instance, $handler);
+                $ttl = $this->getCacheTTL($instance, $this->handler);
                 /** @var Model $model */
                 foreach ($models as $model) {
                     $id = $model->getKey();
-                    $key = $this->getCacheKey($id, $instance, $handler->getConfig());
-                    $handler->set($key, $this->formatModel($model), $ttl);
+                    $key = $this->getCacheKey($id, $instance, $this->handler->getConfig());
+                    $this->handler->set($key, $this->formatModel($model), $ttl);
                 }
 
                 $items = array_merge($items, $this->formatModels($models));
             }
             $map = [];
             foreach ($items as $item) {
-                $map[$item[$primaryKey]] = $this->getAttributes($handler->getConfig(), $instance, $item);
+                $map[$item[$primaryKey]] = $this->getAttributes($this->handler->getConfig(), $instance, $item);
             }
 
             $result = [];
@@ -159,7 +135,7 @@ class Manager
             return $instance->hydrate($result);
         }
 
-        $this->logger->alert('Cache handler not exist, fetch data from database.');
+        # 缓存处理程序不存在，请从数据库中提取数据。
         // @phpstan-ignore-next-line
         return $instance->newQuery()->whereIn($primaryKey, $ids)->get();
     }
@@ -173,14 +149,14 @@ class Manager
         /** @var Model $instance */
         $instance = new $class();
 
-        $name = $instance->getConnectionName();
-        if ($handler = $this->handlers[$name] ?? null) {
+        // $name = $instance->getConnectionName();
+        if ($this->handler) {
             $keys = [];
             foreach ($ids as $id) {
-                $keys[] = $this->getCacheKey($id, $instance, $handler->getConfig());
+                $keys[] = $this->getCacheKey($id, $instance, $this->handler->getConfig());
             }
 
-            return $handler->deleteMultiple($keys);
+            return $this->handler->deleteMultiple($keys);
         }
 
         return false;
@@ -198,16 +174,16 @@ class Manager
         $instance = new $class();
 
         $name = $instance->getConnectionName();
-        if ($handler = $this->handlers[$name] ?? null) {
-            $key = $this->getCacheKey($id, $instance, $handler->getConfig());
-            if ($handler->has($key)) {
-                return $handler->incr($key, $column, $amount);
+        if ($this->handler) {
+            $key = $this->getCacheKey($id, $instance, $this->handler->getConfig());
+            if ($this->handler->has($key)) {
+                return $this->handler->incr($key, $column, $amount);
             }
 
             return false;
         }
 
-        $this->logger->alert('Cache handler not exist, increment failed.');
+        # 缓存处理程序不存在，增量失败。
         return false;
     }
 
@@ -266,8 +242,8 @@ class Manager
         return array_replace($defaultData, $data);
     }
 
-    protected function getPrefix(string $connection): string
+    protected function getPrefix(): string
     {
-        return (string) $this->container->get(ConfigInterface::class)->get('databases.' . $connection . '.prefix');
+        return config('database.connections.mysql.prefix');
     }
 }

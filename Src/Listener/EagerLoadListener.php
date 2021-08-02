@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Liguoxin129\ModelCache\Listener;
 
 use Illuminate\Database\Eloquent\Collection;
-use Hyperf\Event\Contract\ListenerInterface;
-use Hyperf\Framework\Event\BootApplication;
-use Hyperf\ModelCache\EagerLoad\EagerLoader;
+
+// use Hyperf\Framework\Event\BootApplication;
+// use BootApplication
+use Liguoxin129\ModelCache\EagerLoad\EagerLoader;
 use Psr\Container\ContainerInterface;
 
 class EagerLoadListener implements ListenerInterface

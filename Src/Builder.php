@@ -37,7 +37,7 @@ class Builder extends ModelBuilder
 
         $result = $closure();
 
-        $manger = ApplicationContext::getContainer()->get(Manager::class);
+        $manger = new Manager();
 
         $manger->destroy($ids, get_class($this->model));
 

@@ -1,20 +1,25 @@
 {
-    "name": "liguoxin129/model-cache",
+    "name": "liguoxin129\/model-cache",
     "description": "A model cache component",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "liguoxin",
+            "email": "guoxinlee129@gmail.com"
+        }
+    ],
     "keywords": [
         "php",
         "cike",
         "model-cache"
     ],
-    "authors": [
-        {
-            "name": "liguoxin129",
-            "email": "guoxinlee129@gmail.com"
-        }
-    ],
     "require": {
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "friendsofphp/php-cs-fixer": "^3.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.4",
+        "phpunit/phpunit": "^9.5"
     },
     "config": {
         "sort-packages": true
@@ -22,11 +27,6 @@
     "autoload": {
         "psr-4": {
             "Liguoxin129\\ModelCache\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Liguoxin129\\ModelCache\\": "tests"
         }
     },
     "scripts": {
